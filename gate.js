@@ -1,6 +1,6 @@
 const net = require('net')
-const pimp = require('./pimp')
+const client = require('./client')
 
 const server = net.createServer((socket)=>{
-    new pimp(socket)
+    new client(socket)
 }).listen(1080)
