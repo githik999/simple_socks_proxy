@@ -14,10 +14,6 @@ class remote
     {
         this.log('start connecting....')
         let stream = net.createConnection(this.port,this.host)
-        this.timer = setInterval(()=>{
-            process.stdout.write('..')
-        },500)
-        
         
         stream.on('error',(err)=>{
             this.log('remote stream error,'+err.message)
@@ -63,7 +59,6 @@ class remote
 
     log(str)
     {
-        clearInterval(this.timer)
         console.log(performance.now(),`[${this.host}:${this.port}]`,str)
     }
 }
