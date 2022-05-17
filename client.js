@@ -45,7 +45,12 @@ class client
     {
         if(this.stage == 0)
         {
-            this.tell_client_skip_auth()
+            console.log(buf)
+            if(buf[0] == 0x05)
+            {
+                this.tell_client_skip_auth()
+            }
+            
         }
         else if(this.stage == 1)
         {
