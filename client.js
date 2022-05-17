@@ -37,6 +37,7 @@ class client
         })
 
         this.stream = stream
+        this.id = stream.remotePort
     }
     
     handle_data(buf)
@@ -110,7 +111,7 @@ class client
 
     log(str)
     {
-        console.log(performance.now(),`[${this.stream.remotePort}][local]`,str)
+        console.log(performance.now(),`[${this.id}][local]`,str)
     }
 }
 
