@@ -20,7 +20,10 @@ class client
 
         stream.on('close',(hadError)=>{
             this.log('stream fully closed.hadError:'+hadError)
-            this.remote.on_client_close()
+            if(this.remote)
+            {
+                this.remote.on_client_close()
+            }
         })
 
         stream.on('end',(err)=>{
