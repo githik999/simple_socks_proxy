@@ -48,7 +48,7 @@ class remote
     write_data_to_stream(buf)
     {
         this.stream.write(buf,()=>{
-            console.log(`send data to ${this.host}:${this.port}`,buf.length,'byte')
+            console.log(performance.now(),`send data to ${this.host}:${this.port}`,buf.length,'byte')
         })
     }
 
