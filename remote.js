@@ -59,7 +59,7 @@ class remote
 
     log(str)
     {
-        console.log(performance.now(),`[${this.host}:${this.port}]`,str)
+        console.log(performance.now(),`[${this.client}][${this.host}:${this.port}]`,str)
     }
 }
 
