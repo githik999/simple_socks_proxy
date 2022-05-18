@@ -25,7 +25,7 @@ class remote
 
         stream.on('end',(err)=>{
             if(err) throw err
-            this.log('the other end of the socket signals the end of transmission')
+            this.log('host signals the end of transmission')
         })
 
         stream.on('connect',()=>{
@@ -48,7 +48,7 @@ class remote
     write_data_to_stream(buf)
     {
         this.stream.write(buf,()=>{
-            console.log(performance.now(),`send data to ${this.host}:${this.port}`,buf.length,'byte')
+            console.log(performance.now(),`[${this.client.id}]`,buf.length,`byte data tunnel to ${this.host}:${this.port}`)
         })
     }
 

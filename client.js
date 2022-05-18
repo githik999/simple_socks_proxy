@@ -8,7 +8,6 @@ class client
 {
     constructor(stream)
     {
-        this.stage = 0
         this.init_stream(stream)
     }
 
@@ -28,12 +27,13 @@ class client
 
         stream.on('end',(err)=>{
             if(err) throw err
-            this.log('the other end of the socket signals the end of transmission')
+            this.log('user signals the end of transmission')
             stream.destroy()
         })
 
         stream.on('data',(buf)=>{
-            this.handle_data(buf)
+            this.next_stage()
+            this[this.stage](buf)
         })
 
         this.stream = stream
@@ -41,41 +41,15 @@ class client
         this.id = stream.remotePort
     }
     
-    handle_data(buf)
-    {
-        if(this.stage == 0)
-        {
-            console.log(buf)
-            if(buf[0] == 0x05)
-            {
-                this.tell_client_skip_auth()
-            }
-            
-        }
-        else if(this.stage == 1)
-        {
-            const data = this.decode_cmd(buf)
-            if(data.cmd == 'CONNECT')
-            {
-                this.remote = new remote(data.address,data.port,this)
-            }
-        }
-        else if(this.stage == 2)
-        {
-            this.remote.write_data_to_stream(buf)
-        }
-    }
 
     tell_client_skip_auth()
     {
-        this.stage = 1
         let data = Buffer.from([0x05,0x00])
         this.write_data_to_stream(data)
     }
 
     on_connect_remote_success()
     {
-        this.stage = 2
         let data = Buffer.from([0x05,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00])
         this.write_data_to_stream(data)
     }
@@ -83,7 +57,7 @@ class client
     write_data_to_stream(buf)
     {
         this.stream.write(buf,()=>{
-            this.log(`send data to client at stage[${this.stage}]`+buf.length+'byte')
+            this.log(`send data to client[${this.stage}]`+buf.length+'byte')
         })
     }
 
@@ -117,7 +91,48 @@ class client
 
     log(str)
     {
-        console.log(performance.now(),`[${this.id}][${this.client_address}][local]`,str)
+        console.log(performance.now(),`[${this.id}][${this.client_address}]`,str)
+    }
+
+    hello(buf)
+    {
+        if(buf[0] == 0x05)
+        {
+            this.tell_client_skip_auth()
+        }
+    }
+    
+    establish(buf)
+    {
+        const data = this.decode_cmd(buf)
+        if(data.cmd == 'CONNECT')
+        {
+            this.remote = new remote(data.address,data.port,this)
+        }
+    }
+
+    tunnel(buf)
+    {
+        this.remote.write_data_to_stream(buf)
+    }
+
+    next_stage()
+    {
+        let v = this.stage
+        switch(v) 
+        {
+            case undefined:
+                this.stage = 'hello'
+                break
+            case 'hello':
+                this.stage = 'establish'
+                break
+            case 'establish':
+                this.stage = 'tunnel'
+                break
+            default:
+                // code block
+        }
     }
 }
 
