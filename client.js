@@ -57,7 +57,7 @@ class client
     write_data_to_stream(buf)
     {
         this.stream.write(buf,()=>{
-            this.log(`send data to client[${this.stage}]`+buf.length+'byte')
+            console.log(performance.now(),`[${this.id}]`,`send data to [${this.client_address}][${this.stage}]`+buf.length+'byte')
         })
     }
 
@@ -89,10 +89,7 @@ class client
         return {cmd,address,port}
     }
 
-    log(str)
-    {
-        console.log(performance.now(),`[${this.id}][${this.client_address}]`,str)
-    }
+
 
     hello(buf)
     {
@@ -133,6 +130,11 @@ class client
             default:
                 // code block
         }
+    }
+
+    log(str)
+    {
+        console.log(performance.now(),`[${this.id}][${this.client_address}]`,str)
     }
 }
 
